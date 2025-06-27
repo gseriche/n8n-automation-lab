@@ -1,0 +1,151 @@
+{
+  "name": "weather-gpt-summary",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "weather",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3e3fa5e2-35a2-470c-8582-e8e4003f1e83",
+      "name": "Webhook",
+      "webhookId": "da87a7b3-1b4c-43f1-8c39-8ff34f2aef17"
+    },
+    {
+      "parameters": {
+        "url": "=http://api.weatherapi.com/v1/current.json?q=\"{{ $json.body.city }}\"",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "change-this-to-your-api-key"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "e9af48fd-cb72-4f88-817e-7b356475fde1",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "84IiCHyYB28D0maD",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "Application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-3.5-turbo\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Actúa como un meteorólogo. Resume las siguientes condiciones climáticas:\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Ciudad: {{ $json.location.name }}. Clima: {{ $json.current.condition.text }}. Temperatura: {{ $json.current.temp_c }}°C. Sensación térmica: {{ $json.current.feelslike_c }}°C. Humedad: {{ $json.current.humidity }}%. Viento: {{ $json.current.wind_kph }} km/h desde el {{ $json.current.wind_dir }}.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "a5b9a644-82ba-463b-acd0-4fed1bd7abc1",
+      "name": "HTTP Request - Open AI",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "iVholkU3v4irykQJ",
+          "name": "Open AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"message\": \"{{ $json.choices[0].message.content }}\"\n} ",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        660,
+        0
+      ],
+      "id": "4459a9a9-306d-488f-a0d4-dcfd6b961c82",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Open AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request - Open AI": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c172c986-a84a-4a4b-9527-f53f2793a768",
+  "meta": {
+    "instanceId": "5efda6c44810f9d3ef6badbaf67425b212a27bbd37ff23972fc0c98eae364c60"
+  },
+  "id": "lJioY5J3YMzfAuGt",
+  "tags": []
+}

@@ -1,82 +1,58 @@
-# 🤖 GPT Webhook – n8n Automation Lab
+# 🧠 n8n Automation Lab
 
-Este flujo usa [n8n](https://n8n.io) para construir una automatización que recibe un mensaje vía Webhook, lo envía a la API de OpenAI (GPT-3.5 Turbo) y devuelve la respuesta al cliente en formato JSON.
-
----
-
-## 🧩 Estructura del flujo
-
-```text
-Webhook (POST /gpt)
-    ↓
-HTTP Request (OpenAI GPT API)
-    ↓
-Respond to Webhook (JSON con respuesta)
-```
+Laboratorio personal de automatización usando [n8n](https://n8n.io/), integrando APIs, GPT y flujos útiles para experimentación y aprendizaje.
 
 ---
 
-## 📬 Cómo usar
+## 📂 Flujos disponibles
 
-### 1. Levanta n8n localmente
+| Nombre del flujo           | Descripción breve                                                    | JSON | Documentación |
+|----------------------------|-----------------------------------------------------------------------|------|----------------|
+| `gpt-basic-webhook`        | Webhook básico que recibe un prompt y responde con GPT-3.5           | [`gpt-basic-webhook.json`](flows/gpt-basic-webhook.json) | [`gpt-basic-webhook.md`](flows/gpt-basic-webhook.md) |
+| `weather-gpt-summary`      | Consulta una ciudad en WeatherAPI y responde con un resumen GPT      | [`weather-gpt-summary.json`](flows/weather-gpt-summary.json) | [`weather-gpt-summary.md`](flows/weather-gpt-summary.md) |
+
+---
+
+## 🚀 Cómo usar
+
+1. Clona este repositorio
+2. Levanta n8n con Docker Compose:
+
+   ```bash
+   docker compose up -d
+   ```
+
+3. Importa el flujo deseado desde la pestaña **Import Flow** en la UI de n8n
+4. Configura las credenciales necesarias (OpenAI, WeatherAPI, etc.)
+5. Activa el flujo y realiza una prueba (ver documentación específica por flujo)
+
+---
+
+## 📁 Estructura del proyecto
 
 ```bash
-docker compose up -d
+.
+├── flows/                     # Flujos exportados desde n8n y sus documentación
+│   ├── gpt-basic-webhook.json
+│   ├── gpt-basic-webhook.md
+│   ├── weather-gpt-summary.json
+│   └── weather-gpt-summary.md
+├── .gitignore
+├── docker-compose.yml
+└── README.md
 ```
-
-### 2. Haz una petición POST al webhook de test
-
-```bash
-curl -X POST http://localhost:5678/webhook-test/gpt \
-  -H 'Content-Type: application/json' \
-  -d '{"prompt": "¿Cuál es la capital de Francia?"}'
-```
-
-### 3. Respuesta esperada
-
-```json
-{
-  "message": "La capital de Francia es París."
-}
-```
-
----
-
-## 📁 Archivos
-
-| Archivo | Descripción |
-|--------|-------------|
-| `flows/gpt-basic-webhook.json` | Flujo exportado desde n8n |
-| `docker-compose.yml` | Configuración Docker para levantar n8n local |
-| `.gitignore` | Evita subir datos sensibles o temporales |
-| `README.md` | Este archivo, con explicación técnica y uso del flujo |
 
 ---
 
 ## 🔐 Requisitos
 
 - Cuenta en [OpenAI](https://platform.openai.com/)
-- Token de API configurado como credencial en n8n (`Bearer Auth account`)
+- Cuenta en [WeatherAPI](https://www.weatherapi.com/)
 - Docker y Docker Compose instalados en tu sistema
 
 ---
 
-## 📌 Notas
+## ✍️ Autor
 
-- El Webhook está en modo de prueba (`/webhook-test/gpt`). Para uso en producción, activa el flujo en n8n y usa la URL de producción.
-- El `Raw Body` está habilitado, por lo que el JSON debe ir bien formateado.
-
----
-
-## 🛠️ Próximos flujos
-
-- GPT + Notion + Slack
-- API externa → análisis GPT → resumen automatizado
-- ETL básico con Pub/Sub + BigQuery + n8n
-
----
-
-### 👨‍💻 Autor
-
-**@gseriche**  
-Lab de automatizaciones con n8n, enfocado en chatbots, APIs y flujos serverless.
+**Gonzalo Seriche**  
+[🌐 gonzaloseriche.rocks](https://gonzaloseriche.rocks) · [💼 LinkedIn](https://www.linkedin.com/in/gseriche)
